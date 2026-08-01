@@ -19,7 +19,7 @@ const History = () => {
     linkElement.click();
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     const getProjectName = (id) => {
       const p = projects.find(p => p.id === id);
       return p ? p.name : 'Không có dự án';
@@ -35,61 +35,78 @@ const History = () => {
       }
     };
 
-    let tableRows = '';
+    // Dynamically import exceljs and file-saver
+    const ExcelJS = (await import('exceljs')).default;
+    const { saveAs } = await import('file-saver');
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Danh sách công việc');
+
+    // Define columns
+    worksheet.columns = [
+      { header: 'STT', key: 'stt', width: 6 },
+      { header: 'Tên công việc', key: 'title', width: 35 },
+      { header: 'Mô tả', key: 'description', width: 50 },
+      { header: 'Dự án', key: 'project', width: 20 },
+      { header: 'Ngày bắt đầu', key: 'startDate', width: 15 },
+      { header: 'Ngày kết thúc', key: 'endDate', width: 15 },
+      { header: 'Trạng thái', key: 'status', width: 20 },
+      { header: 'Ghi chú', key: 'note', width: 30 }
+    ];
+
+    // Add rows
     tasks.forEach((task, index) => {
-      tableRows += `
-        <tr>
-          <td style="text-align: center;">${index + 1}</td>
-          <td>${task.title || ''}</td>
-          <td>${task.description || ''}</td>
-          <td>${getProjectName(task.projectId)}</td>
-          <td style="text-align: center;">${format(new Date(task.startDate || task.date), 'dd/MM/yyyy')}</td>
-          <td style="text-align: center;">${format(new Date(task.date), 'dd/MM/yyyy')}</td>
-          <td style="text-align: center;">${getStatusText(task.status)}</td>
-          <td></td>
-        </tr>
-      `;
+      worksheet.addRow({
+        stt: index + 1,
+        title: task.title || '',
+        description: task.description || '',
+        project: getProjectName(task.projectId),
+        startDate: format(new Date(task.startDate || task.date), 'dd/MM/yyyy'),
+        endDate: format(new Date(task.date), 'dd/MM/yyyy'),
+        status: getStatusText(task.status),
+        note: ''
+      });
     });
 
-    const html = `
-      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-      <head>
-        <meta charset="utf-8" />
-        <style>
-          table { border-collapse: collapse; width: 100%; }
-          th, td { border: 1px solid #000000; padding: 8px; vertical-align: middle; }
-          th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
-        </style>
-      </head>
-      <body>
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 50px;">STT</th>
-              <th style="width: 250px;">Tên công việc</th>
-              <th style="width: 350px;">Mô tả</th>
-              <th style="width: 150px;">Dự án</th>
-              <th style="width: 100px;">Ngày bắt đầu</th>
-              <th style="width: 100px;">Ngày kết thúc</th>
-              <th style="width: 150px;">Trạng thái</th>
-              <th style="width: 200px;">Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-          </tbody>
-        </table>
-      </body>
-      </html>
-    `;
+    // Style header row
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF2F2F2' }
+      };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
 
-    const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', url);
-    linkElement.setAttribute('download', `Danh_sach_cong_viec_${format(new Date(), 'dd_MM_yyyy')}.xls`);
-    linkElement.click();
+    // Style data rows
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber > 1) {
+        row.eachCell((cell, colNumber) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+          cell.alignment = { vertical: 'middle', wrapText: true };
+          if (colNumber === 1 || colNumber === 5 || colNumber === 6 || colNumber === 7) {
+            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          }
+        });
+      }
+    });
+
+    // Generate Excel file and trigger download
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, `Danh_sach_cong_viec_${format(new Date(), 'dd_MM_yyyy')}.xlsx`);
   };
 
   return (
