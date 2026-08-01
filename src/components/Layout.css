@@ -18,3 +18,23 @@
   padding: 1.5rem 2rem;
   overflow-y: auto;
 }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+  }
+  .layout-content {
+    padding: 1rem;
+  }
+}

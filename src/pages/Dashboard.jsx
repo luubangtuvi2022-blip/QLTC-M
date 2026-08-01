@@ -46,7 +46,8 @@ const Dashboard = () => {
     return {
       name: project ? project.name : 'Không có dự án',
       tasks: projectStats[key],
-      projectId: key === 'unassigned' ? '' : key
+      projectId: key === 'unassigned' ? '' : key,
+      color: project ? project.color : 'var(--primary-color)'
     };
   });
 
@@ -139,11 +140,14 @@ const Dashboard = () => {
                 <Tooltip cursor={{ fill: '#f1f5f9' }} />
                 <Bar 
                   dataKey="tasks" 
-                  fill="var(--primary-color)" 
                   radius={[4, 4, 0, 0]} 
                   onClick={(data) => navigate(`/todo?projectId=${data.projectId}`)}
                   style={{ cursor: 'pointer' }}
-                />
+                >
+                  {barData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Search, Bell, Plus } from 'lucide-react';
+import { Search, Bell, Plus, Menu } from 'lucide-react';
 import { useTasks } from '../context/TaskContext';
 import TaskModal from './TaskModal';
 import './Header.css';
 
-const Header = () => {
+const Header = ({ toggleSidebar }) => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const { tasks, addTask } = useTasks();
@@ -46,8 +46,12 @@ const Header = () => {
 
   return (
     <header className="header glass-panel">
-      <div className="header-search">
-        <Search className="search-icon" size={18} />
+      <div className="header-left">
+        <button className="mobile-menu-btn" onClick={toggleSidebar}>
+          <Menu size={24} />
+        </button>
+        <div className="header-search">
+          <Search className="search-icon" size={18} />
         <input 
           type="text" 
           className="search-input" 
@@ -86,6 +90,7 @@ const Header = () => {
             )}
           </div>
         )}
+      </div>
       </div>
       
       <div className="header-actions">

@@ -11,8 +11,10 @@ import {
   query, 
   orderBy, 
   limit, 
-  writeBatch 
+  writeBatch,
+  where
 } from 'firebase/firestore';
+import { useAuth } from './AuthContext';
 
 const TaskContext = createContext();
 
@@ -22,20 +24,35 @@ export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [activities, setActivities] = useState([]);
+  const { currentUser } = useAuth();
 
-  // Lắng nghe dữ liệu từ Firestore theo thời gian thực
+  // Lắng nghe dữ liệu từ Firestore theo thời gian thực (chỉ tải dữ liệu của người dùng hiện tại)
   useEffect(() => {
-    const unsubTasks = onSnapshot(collection(db, 'tasks'), (snapshot) => {
+    if (!currentUser) {
+      setTasks([]);
+      setProjects([]);
+      setActivities([]);
+      return;
+    }
+
+    const tasksQuery = query(collection(db, 'tasks'), where('userId', '==', currentUser.uid));
+    const unsubTasks = onSnapshot(tasksQuery, (snapshot) => {
       const tasksData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setTasks(tasksData);
     });
 
-    const unsubProjects = onSnapshot(collection(db, 'projects'), (snapshot) => {
+    const projectsQuery = query(collection(db, 'projects'), where('userId', '==', currentUser.uid));
+    const unsubProjects = onSnapshot(projectsQuery, (snapshot) => {
       const projectsData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setProjects(projectsData);
     });
 
-    const activitiesQuery = query(collection(db, 'activities'), orderBy('timestamp', 'desc'), limit(100));
+    const activitiesQuery = query(
+      collection(db, 'activities'), 
+      where('userId', '==', currentUser.uid),
+      orderBy('timestamp', 'desc'), 
+      limit(100)
+    );
     const unsubActivities = onSnapshot(activitiesQuery, (snapshot) => {
       const activitiesData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setActivities(activitiesData);
@@ -46,15 +63,17 @@ export const TaskProvider = ({ children }) => {
       unsubProjects();
       unsubActivities();
     };
-  }, []);
+  }, [currentUser]);
 
   const logActivity = async (action, details) => {
+    if (!currentUser) return;
     try {
       const id = uuidv4();
       const newActivity = {
         action,
         details,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        userId: currentUser.uid
       };
       await setDoc(doc(db, 'activities', id), newActivity);
     } catch (error) {
@@ -63,6 +82,7 @@ export const TaskProvider = ({ children }) => {
   };
 
   const addTask = async (task) => {
+    if (!currentUser) return;
     if (task.id) {
       // Edit existing task
       try {
@@ -76,7 +96,7 @@ export const TaskProvider = ({ children }) => {
       // Add new task
       try {
         const id = uuidv4();
-        await setDoc(doc(db, 'tasks', id), { ...task, id });
+        await setDoc(doc(db, 'tasks', id), { ...task, id, userId: currentUser.uid });
         logActivity('Tạo công việc', `Đã tạo công việc "${task.title}"`);
       } catch (error) {
         console.error('Error adding task: ', error);
@@ -116,6 +136,7 @@ export const TaskProvider = ({ children }) => {
   };
 
   const addProject = async (project) => {
+    if (!currentUser) return;
     if (project.id) {
       try {
         const { id, ...projectData } = project;
@@ -127,7 +148,7 @@ export const TaskProvider = ({ children }) => {
     } else {
       try {
         const id = uuidv4();
-        await setDoc(doc(db, 'projects', id), { ...project, id });
+        await setDoc(doc(db, 'projects', id), { ...project, id, userId: currentUser.uid });
         logActivity('Tạo dự án', `Đã tạo dự án "${project.name}"`);
       } catch (error) {
         console.error('Error adding project: ', error);

@@ -41,6 +41,36 @@
   width: 105%;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+}
+
+.search-bar {
+  position: relative;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+  padding: 0.5rem;
+  border-radius: var(--radius-full);
+}
+
 .header-actions {
   display: flex;
   align-items: center;
