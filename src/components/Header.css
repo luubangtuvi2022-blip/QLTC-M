@@ -100,3 +100,29 @@
   border-radius: var(--radius-full);
   border: 2px solid var(--bg-surface);
 }
+
+.notifications-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  z-index: 50;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 1rem;
+    margin: 1rem 1rem 0;
+  }
+  
+  .notifications-dropdown {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 320px;
+  }
+}

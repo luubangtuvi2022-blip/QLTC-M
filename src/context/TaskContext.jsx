@@ -49,12 +49,14 @@ export const TaskProvider = ({ children }) => {
 
     const activitiesQuery = query(
       collection(db, 'activities'), 
-      where('userId', '==', currentUser.uid),
-      orderBy('timestamp', 'desc'), 
-      limit(100)
+      where('userId', '==', currentUser.uid)
     );
     const unsubActivities = onSnapshot(activitiesQuery, (snapshot) => {
-      const activitiesData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      let activitiesData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      // Sắp xếp giảm dần theo thời gian ở phía client
+      activitiesData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      // Giới hạn 100 bản ghi mới nhất
+      activitiesData = activitiesData.slice(0, 100);
       setActivities(activitiesData);
     });
 

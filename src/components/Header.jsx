@@ -101,9 +101,7 @@ const Header = ({ toggleSidebar }) => {
           </button>
           
           {showNotifications && (
-            <div className="notifications-dropdown card fade-in" style={{
-              position: 'absolute', top: '100%', right: 0, width: '300px', marginTop: '0.5rem', padding: '1rem', zIndex: 50
-            }}>
+            <div className="notifications-dropdown card fade-in">
               <h4 style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>Thông báo</h4>
               {dueTasks.length > 0 ? (
                 <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
