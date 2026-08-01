@@ -9,6 +9,7 @@ import CalendarView from './pages/CalendarView';
 import History from './pages/History';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import UserGuide from './pages/UserGuide';
 import { TaskProvider } from './context/TaskContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -31,6 +32,7 @@ function App() {
               <Route path="kanban" element={<KanbanBoard />} />
               <Route path="calendar" element={<CalendarView />} />
               <Route path="history" element={<History />} />
+              <Route path="guide" element={<UserGuide />} />
             </Route>
           </Routes>
         </Router>

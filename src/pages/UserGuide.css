@@ -1,0 +1,98 @@
+.user-guide-page {
+  padding-bottom: 2rem;
+}
+
+.guide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.guide-section {
+  padding: 1.5rem;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.guide-section:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--primary-color);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-body {
+  padding-left: 4rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.section-body p {
+  margin-bottom: 0.5rem;
+}
+
+.section-body ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-body li {
+  margin-bottom: 0.25rem;
+}
+
+.section-body li strong {
+  color: var(--text-primary);
+}
+
+/* Color utilities for guide icons */
+.bg-primary-light { background-color: rgba(0, 86, 179, 0.1); }
+.text-primary { color: #0056b3; }
+
+.bg-success-light { background-color: rgba(16, 185, 129, 0.1); }
+.text-success { color: #10b981; }
+
+.bg-warning-light { background-color: rgba(245, 158, 11, 0.1); }
+.text-warning { color: #f59e0b; }
+
+.bg-info-light { background-color: rgba(59, 130, 246, 0.1); }
+.text-info { color: #3b82f6; }
+
+.bg-danger-light { background-color: rgba(239, 68, 68, 0.1); }
+.text-danger { color: #ef4444; }
+
+.bg-purple-light { background-color: rgba(139, 92, 246, 0.1); }
+.text-purple { color: #8b5cf6; }
+
+.bg-gray-light { background-color: rgba(100, 116, 139, 0.1); }
+.text-gray { color: #64748b; }
+
+@media (max-width: 768px) {
+  .section-body {
+    padding-left: 0;
+    margin-top: 1rem;
+  }
+}
