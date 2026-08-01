@@ -43,6 +43,7 @@ const History = () => {
           <td>${task.title || ''}</td>
           <td>${task.description || ''}</td>
           <td>${getProjectName(task.projectId)}</td>
+          <td style="text-align: center;">${format(new Date(task.startDate || task.date), 'dd/MM/yyyy')}</td>
           <td style="text-align: center;">${format(new Date(task.date), 'dd/MM/yyyy')}</td>
           <td style="text-align: center;">${getStatusText(task.status)}</td>
           <td></td>
@@ -68,7 +69,8 @@ const History = () => {
               <th style="width: 250px;">Tên công việc</th>
               <th style="width: 350px;">Mô tả</th>
               <th style="width: 150px;">Dự án</th>
-              <th style="width: 100px;">Ngày hẹn</th>
+              <th style="width: 100px;">Ngày bắt đầu</th>
+              <th style="width: 100px;">Ngày kết thúc</th>
               <th style="width: 150px;">Trạng thái</th>
               <th style="width: 200px;">Ghi chú</th>
             </tr>

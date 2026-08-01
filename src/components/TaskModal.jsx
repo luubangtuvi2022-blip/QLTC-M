@@ -10,6 +10,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
   const [description, setDescription] = useState('');
   const [projectId, setProjectId] = useState('');
   const [status, setStatus] = useState('todo');
+  const [startDate, setStartDate] = useState('');
   const [date, setDate] = useState('');
 
   useEffect(() => {
@@ -18,12 +19,14 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
       setDescription(task.description || '');
       setProjectId(task.projectId || '');
       setStatus(task.status);
+      setStartDate(task.startDate ? new Date(task.startDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
       setDate(task.date ? new Date(task.date).toISOString().slice(0, 10) : '');
     } else {
       setTitle('');
       setDescription('');
       setProjectId(projects.length > 0 ? projects[0].id : '');
       setStatus('todo');
+      setStartDate(new Date().toISOString().slice(0, 10));
       setDate(new Date().toISOString().slice(0, 10));
     }
   }, [task, isOpen, projects]);
@@ -43,6 +46,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
       description,
       projectId: finalProjectId, 
       status, 
+      startDate: new Date(startDate).toISOString(),
       date: new Date(date).toISOString() 
     });
     onClose();
@@ -90,14 +94,25 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
               ))}
             </select>
           </div>
-          <div className="form-group">
-            <label>Ngày hẹn</label>
-            <input 
-              type="date" 
-              className="input-field" 
-              value={date} 
-              onChange={(e) => setDate(e.target.value)} 
-            />
+          <div className="form-group" style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label>Ngày bắt đầu</label>
+              <input 
+                type="date" 
+                className="input-field" 
+                value={startDate} 
+                onChange={(e) => setStartDate(e.target.value)} 
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label>Ngày hẹn (Hạn chót)</label>
+              <input 
+                type="date" 
+                className="input-field" 
+                value={date} 
+                onChange={(e) => setDate(e.target.value)} 
+              />
+            </div>
           </div>
           <div className="form-group">
             <label>Trạng thái</label>

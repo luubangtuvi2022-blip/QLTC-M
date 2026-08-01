@@ -33,7 +33,7 @@ const CalendarView = () => {
 
   const events = tasks.map(task => ({
     ...task,
-    start: new Date(task.date),
+    start: new Date(task.startDate || task.date),
     end: new Date(task.date),
   }));
 
@@ -88,6 +88,7 @@ const CalendarView = () => {
       description: '',
       projectId: '',
       status: 'todo',
+      startDate: slotInfo.start.toISOString(),
       date: slotInfo.start.toISOString()
     });
     setIsModalOpen(true);
