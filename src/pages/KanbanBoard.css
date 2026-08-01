@@ -1,0 +1,120 @@
+.kanban-board {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  height: calc(100vh - 180px);
+}
+
+.kanban-column {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  height: 100%;
+}
+
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.kanban-column-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-bottom: 0.25rem;
+}
+
+.task-count {
+  background-color: #e2e8f0;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.kanban-droppable {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 150px;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.kanban-droppable.dragging-over {
+  background-color: rgba(0, 86, 179, 0.05);
+}
+
+.kanban-card {
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: grab;
+  user-select: none;
+  background-color: var(--bg-surface);
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+.kanban-card.is-dragging {
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.02);
+}
+
+.kanban-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.kanban-card-header h4 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.btn-icon-small {
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  margin-top: -0.25rem;
+  margin-right: -0.25rem;
+}
+
+.btn-icon-small:hover {
+  background-color: #f1f5f9;
+  color: var(--text-primary);
+}
+
+.kanban-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kanban-project {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+  border-radius: var(--radius-sm);
+}
+
+.kanban-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
