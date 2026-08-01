@@ -66,8 +66,15 @@ const UserGuide = () => {
           <div className="section-body">
             <p>Bạn có thể theo dõi công việc qua 2 chế độ: <strong>Danh sách</strong> (List) và <strong>Bảng Kanban</strong> (Kéo thả).</p>
             <ul>
-              <li><strong>Tạo công việc:</strong> Nhấn nút "Tạo mới" (Dấu +) ở góc trên bên phải màn hình. Điền đầy đủ thông tin (Tên, Mô tả, Dự án, Hạn chót, Trạng thái).</li>
-              <li><strong>Trạng thái công việc:</strong> Có 4 trạng thái khoa học: <em>Chưa bắt đầu, Đang làm, Chờ duyệt, Hoàn thành</em>.</li>
+              <li><strong>Tạo công việc:</strong> Nhấn nút "Tạo mới" (Dấu +) ở góc trên bên phải màn hình. Điền đầy đủ thông tin (Tên, Mô tả, Dự án, Hạn chót, Ngày bắt đầu, Trạng thái).</li>
+              <li><strong>Màu sắc cảnh báo thời hạn (trong Danh sách):</strong>
+                <ul style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+                  <li>🔴 <strong>Màu đỏ nhạt:</strong> Công việc đã quá hạn.</li>
+                  <li>🟡 <strong>Màu vàng nhạt:</strong> Công việc đến hạn đúng ngày hôm nay.</li>
+                  <li>🟢 <strong>Màu xanh lá cây nhạt:</strong> Công việc trước hạn (còn thời gian).</li>
+                  <li><em>(Riêng các công việc đã chọn trạng thái "Hoàn thành" sẽ giữ màu nền trắng bình thường để bạn không bị rối mắt)</em></li>
+                </ul>
+              </li>
               <li><strong>Bảng Kanban:</strong> Tại đây, bạn có thể <strong>Kéo & Thả</strong> (Drag & Drop) thẻ công việc từ cột này sang cột khác để tự động chuyển trạng thái vô cùng trực quan.</li>
             </ul>
           </div>
