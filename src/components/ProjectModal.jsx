@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 import './Modal.css';
 
@@ -25,7 +26,7 @@ const ProjectModal = ({ isOpen, onClose, onSave, project }) => {
     onClose();
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
@@ -60,7 +61,8 @@ const ProjectModal = ({ isOpen, onClose, onSave, project }) => {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

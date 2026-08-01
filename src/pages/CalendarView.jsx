@@ -65,6 +65,17 @@ const CalendarView = () => {
     updateTask(taskData.id, taskData);
   };
 
+  const handleSelectSlot = (slotInfo) => {
+    setEditingTask({
+      title: '',
+      description: '',
+      projectId: '',
+      status: 'todo',
+      date: slotInfo.start.toISOString()
+    });
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="page-container fade-in">
       <div className="page-header">
@@ -80,6 +91,9 @@ const CalendarView = () => {
           style={{ height: 'calc(100vh - 240px)' }}
           eventPropGetter={eventStyleGetter}
           onSelectEvent={handleSelectEvent}
+          
+          selectable={true}
+          onSelectSlot={handleSelectSlot}
           
           view={currentView}
           onView={(view) => setCurrentView(view)}
