@@ -22,6 +22,28 @@ const Header = () => {
     return diffDays <= 1; // Due today, tomorrow, or past due
   });
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+
+  // Search logic
+  const searchResults = searchTerm.trim() ? tasks.filter(t => 
+    t.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (t.description && t.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  ).slice(0, 5) : [];
+
+  const handleTaskClick = (task) => {
+    setEditingTask(task);
+    setIsTaskModalOpen(true);
+    setShowSearchResults(false);
+    setSearchTerm('');
+  };
+
+  const handleOpenCreateModal = () => {
+    setEditingTask(null);
+    setIsTaskModalOpen(true);
+  };
+
   return (
     <header className="header glass-panel">
       <div className="header-search">
@@ -29,8 +51,41 @@ const Header = () => {
         <input 
           type="text" 
           className="search-input" 
-          placeholder="Tìm kiếm công việc, dự án..." 
+          placeholder="Tìm kiếm công việc..." 
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setShowSearchResults(true);
+          }}
+          onFocus={() => setShowSearchResults(true)}
+          onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
         />
+        {showSearchResults && searchTerm.trim() !== '' && (
+          <div className="search-results-dropdown card fade-in" style={{
+            position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '0.5rem', padding: '0.5rem', zIndex: 50, maxHeight: '300px', overflowY: 'auto'
+          }}>
+            {searchResults.length > 0 ? (
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                {searchResults.map(t => (
+                  <li 
+                    key={t.id} 
+                    onClick={() => handleTaskClick(t)}
+                    style={{ padding: '0.5rem', cursor: 'pointer', borderRadius: '4px', fontSize: '0.875rem' }}
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <strong>{t.title}</strong>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      {t.status === 'todo' ? 'Chưa bắt đầu' : t.status === 'inprogress' ? 'Đang làm' : t.status === 'inreview' ? 'Chờ duyệt' : 'Hoàn thành'}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', padding: '0.5rem', margin: 0 }}>Không tìm thấy kết quả.</p>
+            )}
+          </div>
+        )}
       </div>
       
       <div className="header-actions">
@@ -60,7 +115,7 @@ const Header = () => {
           )}
         </div>
 
-        <button className="btn-primary" onClick={() => setIsTaskModalOpen(true)}>
+        <button className="btn-primary" onClick={handleOpenCreateModal}>
           <Plus size={18} />
           <span>Tạo mới</span>
         </button>
@@ -70,6 +125,7 @@ const Header = () => {
         isOpen={isTaskModalOpen} 
         onClose={() => setIsTaskModalOpen(false)} 
         onSave={addTask}
+        task={editingTask}
       />
     </header>
   );

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTasks } from '../context/TaskContext';
 import { format } from 'date-fns';
 import { Trash2, Edit2, Search } from 'lucide-react';
@@ -6,11 +7,21 @@ import TaskModal from '../components/TaskModal';
 import './TodoList.css';
 
 const TodoList = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialStatus = queryParams.get('status') || 'all';
+
   const { tasks, projects, updateTask, updateTaskStatus, deleteTask } = useTasks();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState(initialStatus);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+
+  useEffect(() => {
+    if (initialStatus) {
+      setFilterStatus(initialStatus);
+    }
+  }, [initialStatus]);
 
   const getStatusText = (status) => {
     switch(status) {

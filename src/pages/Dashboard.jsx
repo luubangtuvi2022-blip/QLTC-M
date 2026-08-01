@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTasks } from '../context/TaskContext';
 import {
   BarChart,
@@ -18,6 +19,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const { tasks } = useTasks();
+  const navigate = useNavigate();
 
   const stats = {
     total: tasks.length,
@@ -43,6 +45,10 @@ const Dashboard = () => {
     tasks: projectStats[key]
   }));
 
+  const handleCardClick = (status) => {
+    navigate(`/todo?status=${status}`);
+  };
+
   return (
     <div className="page-container fade-in">
       <div className="page-header">
@@ -51,7 +57,7 @@ const Dashboard = () => {
       </div>
 
       <div className="stats-grid">
-        <div className="stat-card">
+        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => handleCardClick('all')}>
           <div className="stat-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
             <CheckSquare size={24} />
           </div>
@@ -60,7 +66,7 @@ const Dashboard = () => {
             <p className="stat-value">{stats.total}</p>
           </div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => handleCardClick('todo')}>
           <div className="stat-icon" style={{ backgroundColor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}>
             <Clock size={24} />
           </div>
@@ -69,7 +75,7 @@ const Dashboard = () => {
             <p className="stat-value">{stats.todo}</p>
           </div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => handleCardClick('inprogress')}>
           <div className="stat-icon" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>
             <AlertCircle size={24} />
           </div>
@@ -78,7 +84,7 @@ const Dashboard = () => {
             <p className="stat-value">{stats.inprogress}</p>
           </div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => handleCardClick('done')}>
           <div className="stat-icon" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
             <CheckCircle2 size={24} />
           </div>
