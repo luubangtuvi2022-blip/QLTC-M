@@ -20,8 +20,6 @@ const History = () => {
   };
 
   const handleExportExcel = () => {
-    const headers = ['Tên công việc', 'Mô tả', 'Dự án', 'Ngày hẹn', 'Trạng thái'];
-    
     const getProjectName = (id) => {
       const p = projects.find(p => p.id === id);
       return p ? p.name : 'Không có dự án';
@@ -37,21 +35,58 @@ const History = () => {
       }
     };
 
-    const rows = tasks.map(task => [
-      `"${(task.title || '').replace(/"/g, '""')}"`,
-      `"${(task.description || '').replace(/"/g, '""')}"`,
-      `"${getProjectName(task.projectId).replace(/"/g, '""')}"`,
-      `"${format(new Date(task.date), 'dd/MM/yyyy')}"`,
-      `"${getStatusText(task.status)}"`
-    ]);
+    let tableRows = '';
+    tasks.forEach((task, index) => {
+      tableRows += `
+        <tr>
+          <td style="text-align: center;">${index + 1}</td>
+          <td>${task.title || ''}</td>
+          <td>${task.description || ''}</td>
+          <td>${getProjectName(task.projectId)}</td>
+          <td style="text-align: center;">${format(new Date(task.date), 'dd/MM/yyyy')}</td>
+          <td style="text-align: center;">${getStatusText(task.status)}</td>
+          <td></td>
+        </tr>
+      `;
+    });
 
-    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="utf-8" />
+        <style>
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #000000; padding: 8px; vertical-align: middle; }
+          th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
+        </style>
+      </head>
+      <body>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">STT</th>
+              <th style="width: 250px;">Tên công việc</th>
+              <th style="width: 350px;">Mô tả</th>
+              <th style="width: 150px;">Dự án</th>
+              <th style="width: 100px;">Ngày hẹn</th>
+              <th style="width: 150px;">Trạng thái</th>
+              <th style="width: 200px;">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', url);
-    linkElement.setAttribute('download', `danh-sach-cong-viec-${format(new Date(), 'dd-MM-yyyy')}.csv`);
+    linkElement.setAttribute('download', `Danh_sach_cong_viec_${format(new Date(), 'dd_MM_yyyy')}.xls`);
     linkElement.click();
   };
 
