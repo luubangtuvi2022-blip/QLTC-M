@@ -18,7 +18,7 @@ import { CheckSquare, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { tasks } = useTasks();
+  const { tasks, projects } = useTasks();
   const navigate = useNavigate();
 
   const stats = {
@@ -29,21 +29,26 @@ const Dashboard = () => {
   };
 
   const pieData = [
-    { name: 'Chưa bắt đầu', value: stats.todo, color: '#94a3b8' },
-    { name: 'Đang làm', value: stats.inprogress, color: '#3b82f6' },
-    { name: 'Đã xong', value: stats.done, color: '#10b981' },
+    { name: 'Chưa bắt đầu', value: stats.todo, color: '#94a3b8', status: 'todo' },
+    { name: 'Đang làm', value: stats.inprogress, color: '#3b82f6', status: 'inprogress' },
+    { name: 'Đã xong', value: stats.done, color: '#10b981', status: 'done' },
   ];
 
   // Group tasks by project
   const projectStats = tasks.reduce((acc, task) => {
-    acc[task.projectId] = (acc[task.projectId] || 0) + 1;
+    const pId = task.projectId || 'unassigned';
+    acc[pId] = (acc[pId] || 0) + 1;
     return acc;
   }, {});
 
-  const barData = Object.keys(projectStats).map(key => ({
-    name: key === 'p1' ? 'Web Quản lý' : key === 'p2' ? 'Mobile App' : 'Dự án khác',
-    tasks: projectStats[key]
-  }));
+  const barData = Object.keys(projectStats).map(key => {
+    const project = projects.find(p => p.id === key);
+    return {
+      name: project ? project.name : 'Không có dự án',
+      tasks: projectStats[key],
+      projectId: key === 'unassigned' ? '' : key
+    };
+  });
 
   const handleCardClick = (status) => {
     navigate(`/todo?status=${status}`);
@@ -109,13 +114,15 @@ const Dashboard = () => {
                   outerRadius={110}
                   paddingAngle={5}
                   dataKey="value"
+                  onClick={(data) => handleCardClick(data.payload.status)}
+                  style={{ cursor: 'pointer' }}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend />
+                <Legend onClick={(data) => handleCardClick(data.payload.status)} wrapperStyle={{ cursor: 'pointer' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -130,7 +137,13 @@ const Dashboard = () => {
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} tickLine={false} />
                 <Tooltip cursor={{ fill: '#f1f5f9' }} />
-                <Bar dataKey="tasks" fill="var(--primary-color)" radius={[4, 4, 0, 0]} />
+                <Bar 
+                  dataKey="tasks" 
+                  fill="var(--primary-color)" 
+                  radius={[4, 4, 0, 0]} 
+                  onClick={(data) => navigate(`/todo?projectId=${data.projectId}`)}
+                  style={{ cursor: 'pointer' }}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>

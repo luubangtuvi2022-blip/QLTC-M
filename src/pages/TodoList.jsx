@@ -10,18 +10,19 @@ const TodoList = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialStatus = queryParams.get('status') || 'all';
+  const initialProject = queryParams.get('projectId') || 'all';
 
   const { tasks, projects, updateTask, updateTaskStatus, deleteTask } = useTasks();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState(initialStatus);
+  const [filterProject, setFilterProject] = useState(initialProject);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
   useEffect(() => {
-    if (initialStatus) {
-      setFilterStatus(initialStatus);
-    }
-  }, [initialStatus]);
+    if (initialStatus) setFilterStatus(initialStatus);
+    if (initialProject) setFilterProject(initialProject);
+  }, [initialStatus, initialProject]);
 
   const getStatusText = (status) => {
     switch(status) {
@@ -40,7 +41,8 @@ const TodoList = () => {
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || task.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    const matchesProject = filterProject === 'all' || task.projectId === filterProject;
+    return matchesSearch && matchesStatus && matchesProject;
   });
 
   const getProjectName = (projectId) => {
@@ -76,6 +78,16 @@ const TodoList = () => {
               className="input-field"
             />
           </div>
+          <select 
+            className="input-field select-filter"
+            value={filterProject}
+            onChange={(e) => setFilterProject(e.target.value)}
+          >
+            <option value="all">Tất cả dự án</option>
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
           <select 
             className="input-field select-filter"
             value={filterStatus}

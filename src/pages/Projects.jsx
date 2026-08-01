@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTasks } from '../context/TaskContext';
 import { Folder, MoreVertical, Plus, Edit2, Trash2 } from 'lucide-react';
 import ProjectModal from '../components/ProjectModal';
@@ -6,6 +7,7 @@ import './Projects.css';
 
 const Projects = () => {
   const { projects, tasks, addProject, updateProject, deleteProject } = useTasks();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [activeMenuId, setActiveMenuId] = useState(null);
@@ -37,6 +39,10 @@ const Projects = () => {
     setIsModalOpen(true);
   };
 
+  const handleProjectClick = (projectId) => {
+    navigate(`/todo?projectId=${projectId}`);
+  };
+
   return (
     <div className="page-container fade-in">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -56,7 +62,12 @@ const Projects = () => {
           const stats = getProjectStats(project.id);
           
           return (
-            <div key={project.id} className="card project-card">
+            <div 
+              key={project.id} 
+              className="card project-card" 
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleProjectClick(project.id)}
+            >
               <div className="project-header">
                 <div className="project-icon-wrapper" style={{ backgroundColor: `${project.color}20`, color: project.color }}>
                   <Folder size={24} />
@@ -64,16 +75,19 @@ const Projects = () => {
                 <div style={{ position: 'relative' }}>
                   <button 
                     className="btn-icon-small" 
-                    onClick={() => setActiveMenuId(activeMenuId === project.id ? null : project.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveMenuId(activeMenuId === project.id ? null : project.id);
+                    }}
                   >
                     <MoreVertical size={20} />
                   </button>
                   {activeMenuId === project.id && (
                     <div className="project-menu card fade-in" style={{ position: 'absolute', right: 0, top: '100%', padding: '0.5rem', zIndex: 10, minWidth: '120px' }}>
-                      <button className="menu-item" onClick={() => openEditModal(project)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', textAlign: 'left' }}>
+                      <button className="menu-item" onClick={(e) => { e.stopPropagation(); openEditModal(project); }} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', textAlign: 'left' }}>
                         <Edit2 size={14} /> Sửa
                       </button>
-                      <button className="menu-item text-danger" onClick={() => deleteProject(project.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', textAlign: 'left', color: 'var(--status-danger)' }}>
+                      <button className="menu-item text-danger" onClick={(e) => { e.stopPropagation(); deleteProject(project.id); }} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', textAlign: 'left', color: 'var(--status-danger)' }}>
                         <Trash2 size={14} /> Xoá
                       </button>
                     </div>
