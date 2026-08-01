@@ -39,19 +39,36 @@ const CalendarView = () => {
 
   const eventStyleGetter = (event) => {
     let backgroundColor = 'var(--status-todo)';
-    if (event.status === 'inprogress') backgroundColor = 'var(--status-inprogress)';
-    if (event.status === 'inreview') backgroundColor = 'var(--status-inreview)';
-    if (event.status === 'done') backgroundColor = 'var(--status-done)';
+    let color = 'var(--text-primary)';
+    
+    if (event.status === 'inprogress') {
+      backgroundColor = 'var(--status-inprogress)';
+      color = 'white';
+    }
+    if (event.status === 'inreview') {
+      backgroundColor = 'var(--status-inreview)';
+      color = 'white';
+    }
+    if (event.status === 'done') {
+      backgroundColor = 'var(--status-done)';
+      color = 'white';
+    }
+
+    if (event.projectColor) {
+      backgroundColor = event.projectColor;
+      color = 'white'; // Assumes project colors are dark enough
+    }
 
     const style = {
       backgroundColor,
       borderRadius: '4px',
       opacity: 0.9,
-      color: 'white',
+      color,
       border: '0',
       display: 'block',
       padding: '2px 5px',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      fontWeight: '600'
     };
     return { style };
   };
