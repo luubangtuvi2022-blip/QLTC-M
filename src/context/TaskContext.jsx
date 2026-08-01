@@ -9,21 +9,13 @@ export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem('tasks');
     if (saved) return JSON.parse(saved);
-    return [
-      { id: '1', title: 'Thiết kế giao diện', status: 'todo', projectId: 'p1', date: new Date().toISOString() },
-      { id: '2', title: 'Phát triển backend', status: 'inprogress', projectId: 'p1', date: new Date().toISOString() },
-      { id: '3', title: 'Kiểm thử ứng dụng', status: 'inreview', projectId: 'p2', date: new Date().toISOString() },
-      { id: '4', title: 'Triển khai lên server', status: 'done', projectId: 'p2', date: new Date().toISOString() }
-    ];
+    return [];
   });
 
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('projects');
     if (saved) return JSON.parse(saved);
-    return [
-      { id: 'p1', name: 'Web Quản lý', color: '#0056b3' },
-      { id: 'p2', name: 'Mobile App', color: '#10b981' }
-    ];
+    return [];
   });
 
   useEffect(() => {
@@ -35,7 +27,11 @@ export const TaskProvider = ({ children }) => {
   }, [projects]);
 
   const addTask = (task) => {
-    setTasks([...tasks, { ...task, id: uuidv4() }]);
+    if (task.id) {
+      setTasks(tasks.map(t => (t.id === task.id ? task : t)));
+    } else {
+      setTasks([...tasks, { ...task, id: uuidv4() }]);
+    }
   };
 
   const updateTask = (id, updatedTask) => {
@@ -51,12 +47,23 @@ export const TaskProvider = ({ children }) => {
   };
 
   const addProject = (project) => {
-    setProjects([...projects, { ...project, id: uuidv4() }]);
+    if (project.id) {
+      setProjects(projects.map(p => (p.id === project.id ? project : p)));
+    } else {
+      setProjects([...projects, { ...project, id: uuidv4() }]);
+    }
+  };
+
+  const deleteProject = (id) => {
+    setProjects(projects.filter(p => p.id !== id));
+    // Optional: Delete tasks associated with project, or keep them.
+    // Let's delete associated tasks to avoid orphans
+    setTasks(tasks.filter(t => t.projectId !== id));
   };
 
   return (
     <TaskContext.Provider value={{
-      tasks, projects, addTask, updateTask, updateTaskStatus, deleteTask, addProject
+      tasks, projects, addTask, updateTask, updateTaskStatus, deleteTask, addProject, deleteProject
     }}>
       {children}
     </TaskContext.Provider>

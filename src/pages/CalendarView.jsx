@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -7,6 +7,7 @@ import getDay from 'date-fns/getDay';
 import vi from 'date-fns/locale/vi';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useTasks } from '../context/TaskContext';
+import TaskModal from '../components/TaskModal';
 import './CalendarView.css';
 
 const locales = {
@@ -22,14 +23,14 @@ const localizer = dateFnsLocalizer({
 });
 
 const CalendarView = () => {
-  const { tasks } = useTasks();
+  const { tasks, updateTask } = useTasks();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   const events = tasks.map(task => ({
-    id: task.id,
-    title: task.title,
+    ...task,
     start: new Date(task.date),
     end: new Date(task.date),
-    status: task.status,
   }));
 
   const eventStyleGetter = (event) => {
@@ -45,9 +46,19 @@ const CalendarView = () => {
       color: 'white',
       border: '0',
       display: 'block',
-      padding: '2px 5px'
+      padding: '2px 5px',
+      cursor: 'pointer'
     };
     return { style };
+  };
+
+  const handleSelectEvent = (event) => {
+    setEditingTask(event);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = (taskData) => {
+    updateTask(taskData.id, taskData);
   };
 
   return (
@@ -64,6 +75,7 @@ const CalendarView = () => {
           endAccessor="end"
           style={{ height: 'calc(100vh - 240px)' }}
           eventPropGetter={eventStyleGetter}
+          onSelectEvent={handleSelectEvent}
           culture="vi"
           messages={{
             today: 'Hôm nay',
@@ -76,6 +88,13 @@ const CalendarView = () => {
           }}
         />
       </div>
+
+      <TaskModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveTask}
+        task={editingTask}
+      />
     </div>
   );
 };

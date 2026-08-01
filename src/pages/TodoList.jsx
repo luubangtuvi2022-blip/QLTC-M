@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useTasks } from '../context/TaskContext';
 import { format } from 'date-fns';
 import { Trash2, Edit2, Search } from 'lucide-react';
+import TaskModal from '../components/TaskModal';
 import './TodoList.css';
 
 const TodoList = () => {
-  const { tasks, updateTaskStatus, deleteTask } = useTasks();
+  const { tasks, projects, updateTask, updateTaskStatus, deleteTask } = useTasks();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   const getStatusText = (status) => {
     switch(status) {
@@ -28,6 +31,20 @@ const TodoList = () => {
     const matchesStatus = filterStatus === 'all' || task.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
+
+  const getProjectName = (projectId) => {
+    const p = projects.find(p => p.id === projectId);
+    return p ? p.name : 'Chưa có dự án';
+  };
+
+  const openEditModal = (task) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = (taskData) => {
+    updateTask(taskData.id, taskData);
+  };
 
   return (
     <div className="page-container fade-in">
@@ -79,7 +96,7 @@ const TodoList = () => {
                     <td>
                       <span className="task-title-cell">{task.title}</span>
                     </td>
-                    <td>{task.projectId === 'p1' ? 'Web Quản lý' : 'Mobile App'}</td>
+                    <td>{getProjectName(task.projectId)}</td>
                     <td>{format(new Date(task.date), 'dd/MM/yyyy')}</td>
                     <td>
                       <select 
@@ -94,7 +111,7 @@ const TodoList = () => {
                       </select>
                     </td>
                     <td className="actions-col">
-                      <button className="btn-icon-action edit">
+                      <button className="btn-icon-action edit" onClick={() => openEditModal(task)}>
                         <Edit2 size={16} />
                       </button>
                       <button className="btn-icon-action delete" onClick={() => deleteTask(task.id)}>
@@ -112,8 +129,16 @@ const TodoList = () => {
           </table>
         </div>
       </div>
+
+      <TaskModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveTask}
+        task={editingTask}
+      />
     </div>
   );
 };
 
 export default TodoList;
+
