@@ -152,3 +152,27 @@
   color: var(--text-secondary);
   font-style: italic;
 }
+
+tr.row-overdue {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+tr.row-duetoday {
+  background-color: rgba(245, 158, 11, 0.15);
+}
+
+tr.row-future {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+tr.row-overdue:hover {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+tr.row-duetoday:hover {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+tr.row-future:hover {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}

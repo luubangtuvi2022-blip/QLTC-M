@@ -45,6 +45,21 @@ const TodoList = () => {
     return matchesSearch && matchesStatus && matchesProject;
   });
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const getRowClass = (task) => {
+    if (task.status === 'done') return '';
+    const taskDate = new Date(task.date);
+    taskDate.setHours(0, 0, 0, 0);
+    const diffTime = taskDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'row-overdue'; // Quá hạn
+    if (diffDays === 0) return 'row-duetoday'; // Tới hạn
+    if (diffDays > 0) return 'row-future'; // Trước hạn
+  };
+
   const getProjectName = (projectId) => {
     const p = projects.find(p => p.id === projectId);
     return p ? p.name : 'Chưa có dự án';
@@ -107,7 +122,8 @@ const TodoList = () => {
               <tr>
                 <th>Tên công việc</th>
                 <th>Dự án</th>
-                <th>Ngày hẹn</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
                 <th>Trạng thái</th>
                 <th className="actions-col">Thao tác</th>
               </tr>
@@ -115,12 +131,13 @@ const TodoList = () => {
             <tbody>
               {filteredTasks.length > 0 ? (
                 filteredTasks.map(task => (
-                  <tr key={task.id}>
+                  <tr key={task.id} className={getRowClass(task)}>
                     <td>
                       <div className="task-title-cell">{task.title}</div>
                       {task.description && <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{task.description.length > 50 ? task.description.substring(0, 50) + '...' : task.description}</div>}
                     </td>
                     <td>{getProjectName(task.projectId)}</td>
+                    <td>{format(new Date(task.startDate || task.date), 'dd/MM/yyyy')}</td>
                     <td>{format(new Date(task.date), 'dd/MM/yyyy')}</td>
                     <td>
                       <select 
