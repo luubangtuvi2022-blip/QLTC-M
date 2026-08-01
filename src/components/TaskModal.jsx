@@ -6,6 +6,7 @@ import './Modal.css';
 const TaskModal = ({ isOpen, onClose, onSave, task }) => {
   const { projects } = useTasks();
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [projectId, setProjectId] = useState('');
   const [status, setStatus] = useState('todo');
   const [date, setDate] = useState('');
@@ -13,11 +14,13 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
   useEffect(() => {
     if (task) {
       setTitle(task.title);
-      setProjectId(task.projectId);
+      setDescription(task.description || '');
+      setProjectId(task.projectId || '');
       setStatus(task.status);
       setDate(task.date ? new Date(task.date).toISOString().slice(0, 10) : '');
     } else {
       setTitle('');
+      setDescription('');
       setProjectId(projects.length > 0 ? projects[0].id : '');
       setStatus('todo');
       setDate(new Date().toISOString().slice(0, 10));
@@ -28,11 +31,16 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim() || !projectId) return;
+    if (!title.trim()) return;
+    
+    // Nếu không chọn dự án, gán chuỗi rỗng
+    const finalProjectId = projectId || '';
+
     onSave({ 
       id: task?.id, 
       title, 
-      projectId, 
+      description,
+      projectId: finalProjectId, 
       status, 
       date: new Date(date).toISOString() 
     });
@@ -59,16 +67,26 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
             />
           </div>
           <div className="form-group">
+            <label>Mô tả công việc</label>
+            <textarea 
+              className="input-field" 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              placeholder="Nhập mô tả chi tiết"
+              style={{ minHeight: '80px', resize: 'vertical' }}
+            />
+          </div>
+          <div className="form-group">
             <label>Dự án</label>
             <select 
               className="input-field" 
               value={projectId} 
               onChange={(e) => setProjectId(e.target.value)}
             >
+              <option value="">-- Không chọn dự án --</option>
               {projects.map(p => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
-              {projects.length === 0 && <option value="" disabled>Chưa có dự án nào</option>}
             </select>
           </div>
           <div className="form-group">
@@ -95,7 +113,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task }) => {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn-secondary" onClick={onClose}>Hủy</button>
-            <button type="submit" className="btn-primary" disabled={projects.length === 0}>Lưu công việc</button>
+            <button type="submit" className="btn-primary">Lưu công việc</button>
           </div>
         </form>
       </div>

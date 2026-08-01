@@ -94,7 +94,8 @@ const TodoList = () => {
                 filteredTasks.map(task => (
                   <tr key={task.id}>
                     <td>
-                      <span className="task-title-cell">{task.title}</span>
+                      <div className="task-title-cell">{task.title}</div>
+                      {task.description && <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{task.description.length > 50 ? task.description.substring(0, 50) + '...' : task.description}</div>}
                     </td>
                     <td>{getProjectName(task.projectId)}</td>
                     <td>{format(new Date(task.date), 'dd/MM/yyyy')}</td>

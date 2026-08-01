@@ -35,6 +35,9 @@
   font-size: 0.8125rem;
   font-weight: 500;
   box-shadow: var(--shadow-sm);
+  white-space: normal !important;
+  word-break: break-word;
+  min-height: 24px;
 }
 
 .rbc-today {

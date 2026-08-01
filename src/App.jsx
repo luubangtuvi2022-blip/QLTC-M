@@ -5,6 +5,7 @@ import Projects from './pages/Projects';
 import TodoList from './pages/TodoList';
 import KanbanBoard from './pages/KanbanBoard';
 import CalendarView from './pages/CalendarView';
+import History from './pages/History';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="todo" element={<TodoList />} />
           <Route path="kanban" element={<KanbanBoard />} />
           <Route path="calendar" element={<CalendarView />} />
+          <Route path="history" element={<History />} />
         </Route>
       </Routes>
     </Router>

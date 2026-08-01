@@ -26,6 +26,10 @@ const CalendarView = () => {
   const { tasks, updateTask } = useTasks();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  
+  // Controlled state for Calendar
+  const [currentView, setCurrentView] = useState('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const events = tasks.map(task => ({
     ...task,
@@ -76,6 +80,12 @@ const CalendarView = () => {
           style={{ height: 'calc(100vh - 240px)' }}
           eventPropGetter={eventStyleGetter}
           onSelectEvent={handleSelectEvent}
+          
+          view={currentView}
+          onView={(view) => setCurrentView(view)}
+          date={currentDate}
+          onNavigate={(date) => setCurrentDate(date)}
+          
           culture="vi"
           messages={{
             today: 'Hôm nay',

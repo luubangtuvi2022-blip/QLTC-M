@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CheckSquare, Kanban, Calendar, FolderKanban } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, Kanban, Calendar, FolderKanban, History } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -10,6 +10,7 @@ const Sidebar = () => {
     { name: 'Danh sách', path: '/todo', icon: <CheckSquare size={20} /> },
     { name: 'Bảng Kanban', path: '/kanban', icon: <Kanban size={20} /> },
     { name: 'Lịch làm việc', path: '/calendar', icon: <Calendar size={20} /> },
+    { name: 'Lịch sử', path: '/history', icon: <History size={20} /> },
   ];
 
   return (

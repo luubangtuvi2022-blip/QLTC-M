@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useTasks } from '../context/TaskContext';
-import { MoreVertical, Calendar as CalendarIcon } from 'lucide-react';
+import { MoreVertical, Calendar as CalendarIcon, Edit2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import TaskModal from '../components/TaskModal';
 import './KanbanBoard.css';
 
 const columns = [
@@ -13,7 +14,10 @@ const columns = [
 ];
 
 const KanbanBoard = () => {
-  const { tasks, updateTaskStatus } = useTasks();
+  const { tasks, updateTaskStatus, updateTask, deleteTask } = useTasks();
+  const [activeMenuId, setActiveMenuId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
@@ -22,6 +26,16 @@ const KanbanBoard = () => {
     if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
     updateTaskStatus(draggableId, destination.droppableId);
+  };
+
+  const openEditModal = (task) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+    setActiveMenuId(null);
+  };
+
+  const handleSaveTask = (taskData) => {
+    updateTask(taskData.id, taskData);
   };
 
   return (
@@ -60,13 +74,33 @@ const KanbanBoard = () => {
                             >
                               <div className="kanban-card-header">
                                 <h4>{task.title}</h4>
-                                <button className="btn-icon-small">
-                                  <MoreVertical size={16} />
-                                </button>
+                                <div style={{ position: 'relative' }}>
+                                  <button 
+                                    className="btn-icon-small"
+                                    onClick={() => setActiveMenuId(activeMenuId === task.id ? null : task.id)}
+                                  >
+                                    <MoreVertical size={16} />
+                                  </button>
+                                  {activeMenuId === task.id && (
+                                    <div className="project-menu card fade-in" style={{ position: 'absolute', right: 0, top: '100%', padding: '0.5rem', zIndex: 10, minWidth: '120px' }}>
+                                      <button className="menu-item" onClick={() => openEditModal(task)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', textAlign: 'left' }}>
+                                        <Edit2 size={14} /> Sửa
+                                      </button>
+                                      <button className="menu-item text-danger" onClick={() => { deleteTask(task.id); setActiveMenuId(null); }} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem', textAlign: 'left', color: 'var(--status-danger)' }}>
+                                        <Trash2 size={14} /> Xoá
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
+                              {task.description && (
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+                                  {task.description.length > 60 ? task.description.substring(0, 60) + '...' : task.description}
+                                </div>
+                              )}
                               <div className="kanban-card-footer">
                                 <span className="kanban-project">
-                                  {task.projectId === 'p1' ? 'Web' : 'Mobile'}
+                                  {task.projectId ? 'Dự án' : 'Không có DA'}
                                 </span>
                                 <span className="kanban-date">
                                   <CalendarIcon size={14} />
@@ -86,6 +120,13 @@ const KanbanBoard = () => {
           })}
         </div>
       </DragDropContext>
+      
+      <TaskModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveTask}
+        task={editingTask}
+      />
     </div>
   );
 };
