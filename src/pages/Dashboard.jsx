@@ -37,19 +37,51 @@ const Dashboard = () => {
   // Group tasks by project
   const projectStats = tasks.reduce((acc, task) => {
     const pId = task.projectId || 'unassigned';
-    acc[pId] = (acc[pId] || 0) + 1;
+    if (!acc[pId]) acc[pId] = { total: 0, done: 0, notDone: 0 };
+    acc[pId].total += 1;
+    if (task.status === 'done') acc[pId].done += 1;
+    else acc[pId].notDone += 1;
     return acc;
   }, {});
 
   const barData = Object.keys(projectStats).map(key => {
     const project = projects.find(p => p.id === key);
+    const stats = projectStats[key];
+    const donePercent = Math.round((stats.done / stats.total) * 100);
+    const notDonePercent = 100 - donePercent;
+
     return {
       name: project ? project.name : 'Không có dự án',
-      tasks: projectStats[key],
+      total: stats.total,
+      done: stats.done,
+      notDone: stats.notDone,
+      donePercent,
+      notDonePercent,
       projectId: key === 'unassigned' ? '' : key,
       color: project ? project.color : 'var(--primary-color)'
     };
   });
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="card" style={{ padding: '1rem', border: 'none', boxShadow: 'var(--shadow-md)' }}>
+          <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>{label}</p>
+          <p style={{ color: 'var(--status-done)', fontSize: '0.875rem' }}>
+            Đã hoàn thành: {data.done} ({data.donePercent}%)
+          </p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+            Chưa hoàn thành: {data.notDone} ({data.notDonePercent}%)
+          </p>
+          <p style={{ fontWeight: '500', marginTop: '0.25rem', fontSize: '0.875rem' }}>
+            Tổng cộng: {data.total}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   const handleCardClick = (status) => {
     navigate(`/todo?status=${status}`);
@@ -137,15 +169,31 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: '#f1f5f9' }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f1f5f9' }} />
+                
+                {/* Phần chưa hoàn thành (Màu nhạt / độ trong suốt 0.3) */}
                 <Bar 
-                  dataKey="tasks" 
+                  dataKey="notDone" 
+                  stackId="a" 
+                  radius={[0, 0, 4, 4]} 
+                  onClick={(data) => navigate(`/todo?projectId=${data.projectId}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {barData.map((entry, index) => (
+                    <Cell key={`cell-notdone-${index}`} fill={entry.color} fillOpacity={0.3} />
+                  ))}
+                </Bar>
+                
+                {/* Phần đã hoàn thành (Màu đậm) */}
+                <Bar 
+                  dataKey="done" 
+                  stackId="a" 
                   radius={[4, 4, 0, 0]} 
                   onClick={(data) => navigate(`/todo?projectId=${data.projectId}`)}
                   style={{ cursor: 'pointer' }}
                 >
                   {barData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell key={`cell-done-${index}`} fill={entry.color} />
                   ))}
                 </Bar>
               </BarChart>

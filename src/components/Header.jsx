@@ -25,6 +25,21 @@ const Header = ({ toggleSidebar }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const notifRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
 
   // Search logic
   const searchResults = searchTerm.trim() ? tasks.filter(t => 
@@ -94,7 +109,7 @@ const Header = ({ toggleSidebar }) => {
       </div>
       
       <div className="header-actions">
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }} ref={notifRef}>
           <button className="btn-icon" onClick={() => setShowNotifications(!showNotifications)}>
             <Bell size={20} />
             {dueTasks.length > 0 && <span className="notification-badge"></span>}
