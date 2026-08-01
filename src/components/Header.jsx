@@ -35,9 +35,11 @@ const Header = ({ toggleSidebar }) => {
     };
     if (showNotifications) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [showNotifications]);
 
